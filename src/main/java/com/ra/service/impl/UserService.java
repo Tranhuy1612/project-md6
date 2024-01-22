@@ -1,5 +1,6 @@
 package com.ra.service.impl;
 
+import com.ra.exception.RegisterException;
 import com.ra.model.dto.request.UserLogin;
 import com.ra.model.dto.request.UserRegister;
 import com.ra.model.dto.response.JwtResponse;
@@ -32,90 +33,90 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
-	
-	@Value("${jwt.expired}")
-	private Long EXPIRED;
-	
-	private final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
-	
-	@Autowired
-	private IUserRepository userRepository;
-	@Autowired
-	private IRoleService roleService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
-	private AuthenticationProvider authenticationProvider;
-	@Autowired
-	private JwtProvider jwtProvider;
-	@Autowired
-	private JwtTokenFilter jwtTokenFilter;
-	@Autowired
-	private UserDetailService userDetailService;
-	
-	@Override
-	public void register(UserRegister userRegister) {
-		if (userRepository.existsByUserName(userRegister.getUsername())) {
-			throw new RuntimeException("username is exists");
-		}
-		Set<Roles> roles = new HashSet<>();
-		
-		// Nếu không có quyền được truyền lên, mặc định là role user
-		if (userRegister.getRoles() == null || userRegister.getRoles().isEmpty()) {
-			roles.add(roleService.findByRoleName(RoleName.ROLE_USER));
-		} else {
-			// Xác định quyền dựa trên danh sách quyền được truyền lên
-			userRegister.getRoles().forEach(role -> {
-				switch (role) {
-					case "ROLE_ADMIN":
-						roles.add(roleService.findByRoleName(RoleName.ROLE_ADMIN));
-					case "ROLE_USER":
-						roles.add(roleService.findByRoleName(RoleName.ROLE_USER));
-						break;
-					default:
-						throw new RuntimeException("role not found");
-				}
-			});
-		}
-		userRepository.save(Users.builder()
-				  .fullName(userRegister.getFullName())
-				  .userName(userRegister.getUsername())
-				  .passWord(passwordEncoder.encode(userRegister.getPassword()))
-				  .roles(roles)
-				  .build());
-	}
-	
-	@Override
-	public JwtResponse login(UserLogin userLogin) {
-		Authentication authentication;
-		try {
-			authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getUsername(), userLogin.getPassword()));
-		} catch (AuthenticationException e) {
-			throw new RuntimeException("Username or Password is incorrect 11312321");
-		}
-		UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-		
-		Users users = userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new RuntimeException("user not found"));
 
-		userRepository.save(users);
-		// thực hiện trả về cho người dùng
-		return JwtResponse.builder()
-				  .accessToken(jwtProvider.generateToken(userPrincipal))
-				  .expired(EXPIRED)
-				  .fullName(userPrincipal.getFullName())
-				  .userName(userPrincipal.getUsername())
-				  .roles(userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()))
-				  .build();
-	}
-	
-	@Override
-	public List<Users> getAllUser() {
-		return userRepository.findAll();
-	}
-	
-	@Override
-	public String handleLogout(Authentication authentication) {
-		return null;
-	}
+    @Value("${jwt.expired}")
+    private Long EXPIRED;
+
+    private final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
+
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private IRoleService roleService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
+    @Autowired
+    private JwtProvider jwtProvider;
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
+    @Autowired
+    private UserDetailService userDetailService;
+
+    @Override
+    public void register(UserRegister userRegister) {
+        if (userRepository.existsByUserName(userRegister.getUsername())) {
+            throw new RuntimeException("username is exists");
+        }
+        Set<Roles> roles = new HashSet<>();
+
+        // Nếu không có quyền được truyền lên, mặc định là role user
+        if (userRegister.getRoles() == null || userRegister.getRoles().isEmpty()) {
+            roles.add(roleService.findByRoleName(RoleName.ROLE_USER));
+        } else {
+            // Xác định quyền dựa trên danh sách quyền được truyền lên
+            userRegister.getRoles().forEach(role -> {
+                switch (role) {
+                    case "ROLE_ADMIN":
+                        roles.add(roleService.findByRoleName(RoleName.ROLE_ADMIN));
+                    case "ROLE_USER":
+                        roles.add(roleService.findByRoleName(RoleName.ROLE_USER));
+                        break;
+                    default:
+                        throw new RuntimeException("role not found");
+                }
+            });
+        }
+        userRepository.save(Users.builder()
+                .fullName(userRegister.getFullName())
+                .userName(userRegister.getUsername())
+                .passWord(passwordEncoder.encode(userRegister.getPassword()))
+                .roles(roles)
+                .build());
+    }
+
+    @Override
+    public JwtResponse login(UserLogin userLogin) {
+        Authentication authentication;
+        try {
+            authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getUsername(), userLogin.getPassword()));
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Username or Password is incorrect 11312321");
+        }
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        Users users = userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new RuntimeException("user not found"));
+
+        userRepository.save(users);
+        // thực hiện trả về cho người dùng
+        return JwtResponse.builder()
+                .accessToken(jwtProvider.generateToken(userPrincipal))
+                .expired(EXPIRED)
+                .fullName(userPrincipal.getFullName())
+                .userName(userPrincipal.getUsername())
+                .roles(userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()))
+                .build();
+    }
+
+    @Override
+    public List<Users> getAllUser() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public String handleLogout(Authentication authentication) {
+        return null;
+    }
 
 }
