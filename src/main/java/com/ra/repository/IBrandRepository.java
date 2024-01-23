@@ -1,5 +1,6 @@
 package com.ra.repository;
 
+import com.ra.model.dto.BrandDTO;
 import com.ra.model.entity.Brand;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

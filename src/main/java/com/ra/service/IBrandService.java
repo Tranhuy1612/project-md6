@@ -1,18 +1,18 @@
 package com.ra.service;
 
 import com.ra.exception.NotEmptyCustomer;
-import com.ra.model.dto.request.BrandReq;
-import com.ra.model.dto.response.BrandRes;
-import org.aspectj.weaver.ast.Not;
+import com.ra.model.dto.BrandDTO;
+import com.ra.model.dto.BrandDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IBrandService {
-    List<BrandRes> findAllShow(String search, String filed, String sort, Integer page, Integer limit) throws NotEmptyCustomer;
+    List<BrandDTO> findAllShow(String search, String filed, String sort, Integer page, Integer limit) throws NotEmptyCustomer;
 
-    BrandRes findById(Long id) throws NotEmptyCustomer;
+    BrandDTO findById(Long id) throws NotEmptyCustomer;
 
-    BrandRes addBrand(BrandReq brandReq) ;
-    BrandRes updateBrand(BrandReq brandReq) throws NotEmptyCustomer;
+    BrandDTO addBrand(BrandDTO brandDTO) throws IOException;
+    BrandDTO updateBrand(BrandDTO brandDTO) throws NotEmptyCustomer;
     String delete(Long id)throws NotEmptyCustomer;
 }
