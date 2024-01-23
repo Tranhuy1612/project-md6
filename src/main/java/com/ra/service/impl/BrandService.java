@@ -25,24 +25,25 @@ import java.util.Optional;
 public class BrandService implements IBrandService {
     @Value("${path-upload}")
     private String pathUpload;
-    @Value("${server.port}")
-    private Long port;
+//    @Value("${server.port}")
+//    private Long port;
     @Autowired
     private IBrandRepository brandRepository;
 
     @Override
-    public List<BrandDTO> findAllShow(String search, String filed, String sort, Integer page, Integer limit) throws NotEmptyCustomer {
+    public List<BrandDTO> findAllShow(String search, String filed, String sort, Integer page, Integer limit)  {
         Sort sort1 = Sort.by(filed);
         Page<Brand> brands = brandRepository.findAllBySearch(search, PageRequest.of(page, limit).withSort(sort1));
-        List<BrandDTO> BrandDTOList = new ArrayList<>();
-        for (Brand b : brands) {
-            if (b.isDeleteFlag()) {
-                BrandDTO BrandDTO = new BrandDTO();
-                BrandDTOList.add(BrandDTO);
+        List<BrandDTO> brandDTOList = new ArrayList<>();
+        for (Brand brand : brands) {
+            if (brand.isDeleteFlag()) {
+                BrandDTO brandDTO = BrandMapper.INSTANCE.brandToBrandDTO(brand);
+                brandDTOList.add(brandDTO);
             }
         }
-        return BrandDTOList;
+        return brandDTOList;
     }
+
 
     @Override
     public BrandDTO findById(Long id) throws NotEmptyCustomer {
@@ -73,13 +74,11 @@ public class BrandService implements IBrandService {
         try {
             Long brandId = brandDTO.getId();
             if (brandId == null) {
-                throw new NotEmptyCustomer("Brand ID must not be null");
+                throw new NotEmptyCustomer("ID thương hiệu không được rỗng");
             }
-
             Optional<Brand> existingBrandOptional = brandRepository.findById(brandId);
             if (existingBrandOptional.isPresent()) {
                 Brand existingBrand = existingBrandOptional.get();
-
                 // Cập nhật các thuộc tính không phải file
                 existingBrand.setBrandUrl(brandDTO.getBrandUrl());
                 existingBrand.setBrandName(brandDTO.getBrandName());
@@ -111,39 +110,6 @@ public class BrandService implements IBrandService {
             throw new RuntimeException("Error updating brand: " + e.getMessage(), e);
         }
     }
-
-
-//    @Override
-//    public BrandDTO updateBrand(BrandDTO brandDTO) throws NotEmptyCustomer {
-////        String fileName = brandDTO.getBrandLogo().getOriginalFilename();
-////        try {
-////            FileCopyUtils.copy(brandDTO.getBrandLogo().getBytes(), new File(pathUpload + fileName));
-////        } catch (IOException e) {
-////            throw new RuntimeException(e.getMessage());
-////        }
-////        Optional<Brand> brand = brandRepository.findById(brandDTO.getId());
-////        if (brand.isPresent() && brand.get().isDeleteFlag()) {
-////            Brand brand1 = brand.get();
-////            brand1.setBrandUrl(brandDTO.getBrandUrl());
-////            brand1.setBrandName(brandDTO.getBrandName());
-////            brand1.setBrandLogo("http://localhost:" + port + "/" + fileName);
-////            brand1.setStoreFlyer(brand1.getStoreFlyer());
-////            brand1.setMiniFlyer(brand1.getMiniFlyer());
-////            brand1.setUsageFlag(brand1.isUsageFlag());
-////            Brand b = brandRepository.save(brand1);
-////            return BrandDTO.builder()
-////                    .id(b.getId())
-////                    .brandName(b.getBrandName())
-////                    .brandUrl(b.getBrandUrl())
-////                    .brandLogo(b.getBrandLogo())
-////                    .storeFlyer(b.getStoreFlyer())
-////                    .miniFlyer(b.getMiniFlyer())
-////                    .usageFlag(b.isUsageFlag()).build();
-////        }
-////        throw new NotEmptyCustomer("hãng không tồn tại");
-//        return null;
-//    }
-
     @Override
     public String delete(Long id) throws NotEmptyCustomer {
         Optional<Brand> brand = brandRepository.findById(id);

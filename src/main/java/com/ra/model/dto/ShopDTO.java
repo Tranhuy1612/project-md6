@@ -6,6 +6,7 @@ import com.ra.model.entity.Plans;
 import com.ra.model.entity.Prefectures;
 import lombok.*;
 
+import java.util.Date;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -26,4 +27,7 @@ public class ShopDTO {
     private Set<Plans> plans;
     private Integer zipCode;
     private Boolean storeStatus;
+    private Date createDate;
+    private Date updateDate;
+    private boolean deleteFlag = false;
 }

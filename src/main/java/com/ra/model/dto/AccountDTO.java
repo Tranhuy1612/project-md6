@@ -4,6 +4,7 @@ import com.ra.model.entity.Agents;
 import com.ra.model.entity.Roles;
 import lombok.*;
 
+import java.util.Date;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -20,6 +21,7 @@ public class AccountDTO {
     private Long ownerId;
     private Long shopId;
     private Boolean activatedFlag;
+    private Date createDate;
+    private Date updateDate;
     private boolean deleteFlag = false;
-    
 }

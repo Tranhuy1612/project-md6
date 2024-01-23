@@ -38,13 +38,13 @@ public class BrandController {
 
     // thêm brand mới
     @PostMapping("/addBrand")
-    public ResponseEntity<BrandDTO> addBrand(@Valid @RequestBody BrandDTO brandDTO) throws IOException {
+    public ResponseEntity<BrandDTO> addBrand(@Valid @ModelAttribute BrandDTO brandDTO) throws IOException {
         return new ResponseEntity<>(brandService.addBrand(brandDTO), HttpStatus.CREATED);
     }
 
-    // Chỉnh sửa thông tin brand
-    @PutMapping("/update")
-    public ResponseEntity<BrandDTO> updateBrand(@Valid @RequestBody BrandDTO brandDTO) throws NotEmptyCustomer {
+    // Chỉnh sửa thông tin brand theo id
+    @PutMapping("/update/{id}")
+    public ResponseEntity<BrandDTO> updateBrand(@Valid @ModelAttribute BrandDTO brandDTO) throws NotEmptyCustomer {
         return new ResponseEntity<>(brandService.updateBrand(brandDTO), HttpStatus.OK);
     }
 

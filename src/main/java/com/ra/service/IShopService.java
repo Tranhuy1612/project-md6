@@ -1,7 +1,6 @@
 package com.ra.service;
 
 import com.ra.exception.NotEmptyCustomer;
-import com.ra.model.dto.BrandDTO;
 import com.ra.model.dto.ShopDTO;
 
 import java.io.IOException;

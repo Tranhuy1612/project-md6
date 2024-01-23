@@ -10,6 +10,5 @@ import org.mapstruct.factory.Mappers;
 public interface BrandMapper {
     BrandMapper INSTANCE = Mappers.getMapper(BrandMapper.class);
     BrandDTO brandToBrandDTO(Brand brand);
-
     Brand brandDTOToBrand(BrandDTO brandDTO);
 }
