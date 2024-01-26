@@ -6,17 +6,23 @@ import com.ra.model.dto.BrandDTO;
 import com.ra.model.entity.Brand;
 import com.ra.repository.IBrandRepository;
 import com.ra.service.IBrandService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,25 +31,26 @@ import java.util.Optional;
 public class BrandService implements IBrandService {
     @Value("${path-upload}")
     private String pathUpload;
-//    @Value("${server.port}")
+    //    @Value("${server.port}")
 //    private Long port;
     @Autowired
     private IBrandRepository brandRepository;
 
-    @Override
-    public List<BrandDTO> findAllShow(String search, String filed, String sort, Integer page, Integer limit)  {
-        Sort sort1 = Sort.by(filed);
-        Page<Brand> brands = brandRepository.findAllBySearch(search, PageRequest.of(page, limit).withSort(sort1));
+
+    public List<BrandDTO> findAllShow( String brandName, String url,Integer startId, Integer endId, Integer page, Integer limit) {
+//        Sort sort1 = Sort.by(filed);
+        Sort sort = Sort.by(Sort.Direction.fromString("DESC"), "brandName");
+        Pageable pageable = PageRequest.of(page, limit).withSort(sort);
+        Page<Brand> brands = brandRepository.findAllBySearch(brandName, url,startId, endId, pageable);
         List<BrandDTO> brandDTOList = new ArrayList<>();
-        for (Brand brand : brands) {
-            if (brand.isDeleteFlag()) {
+        for (Brand brand : brands.getContent()) {
+            if (!brand.isDeleteFlag()) {
                 BrandDTO brandDTO = BrandMapper.INSTANCE.brandToBrandDTO(brand);
                 brandDTOList.add(brandDTO);
             }
         }
         return brandDTOList;
     }
-
 
     @Override
     public BrandDTO findById(Long id) throws NotEmptyCustomer {
@@ -110,6 +117,7 @@ public class BrandService implements IBrandService {
             throw new RuntimeException("Error updating brand: " + e.getMessage(), e);
         }
     }
+
     @Override
     public String delete(Long id) throws NotEmptyCustomer {
         Optional<Brand> brand = brandRepository.findById(id);
@@ -122,4 +130,22 @@ public class BrandService implements IBrandService {
         throw new NotEmptyCustomer("sản phẩm không tồn tại ");
     }
 
+    //    File CSV
+    @Override
+    public void exportToCsv(HttpServletResponse response, List<Brand> data) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.csv");
+
+        try (PrintWriter writer = response.getWriter();
+             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("id", "brand_name", "brand_url", "brand_logo", "store_flyer", "mini_flyer", "usage_flag", "create_date", "update_date"))) {
+            for (Brand row : data) {
+                csvPrinter.printRecord(row.getId(), row.getBrandName(), row.getBrandLogo(), row.getBrandUrl(), row.getStoreFlyer(), row.getMiniFlyer(), row.isUsageFlag(), row.getCreateDate(), row.getUpdateDate());
+
+            }
+        }
+    }
+
+    public List<Brand> findAll() {
+        return brandRepository.findAll();
+    }
 }

@@ -19,7 +19,7 @@ public class ShopController {
     private ShopService shopService;
 
     @GetMapping()
-    public ResponseEntity<List<ShopDTO>> getAllBrand(
+    public ResponseEntity<List<ShopDTO>> getAllShop(
             @RequestParam(defaultValue = "") String search,
             @RequestParam(defaultValue = "id") String filed,
             @RequestParam(defaultValue = "asc") String sort,
@@ -36,8 +36,8 @@ public class ShopController {
     }
 
     // Thêm mới Shop
-    @PostMapping("/{id}")
-    public ResponseEntity<ShopDTO> getById(@ModelAttribute ShopDTO shopDTO) {
+    @PostMapping("/addShop")
+    public ResponseEntity<ShopDTO> addShop(@ModelAttribute ShopDTO shopDTO) {
         return new ResponseEntity<>(shopService.addShop(shopDTO), HttpStatus.CREATED);
     }
 

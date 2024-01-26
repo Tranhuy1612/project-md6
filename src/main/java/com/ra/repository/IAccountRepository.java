@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IAccountRepository extends JpaRepository<Account, Long> {
-    @Query(value = "SELECT a FROM Account a WHERE LOWER(a.loginId) LIKE %:search% OR LOWER(a.createDate) LIKE %:search% OR LOWER(a.updateDate) LIKE %:search%")
+    @Query(value = "SELECT a FROM Account a WHERE LOWER(a.loginId) LIKE %:search% ")
     Page<Account> findAllBySearch(@Param("search") String search, Pageable pageable);
 }

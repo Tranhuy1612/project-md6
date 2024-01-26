@@ -33,5 +33,5 @@ public class Account extends GeneralClass {
     @Column(name = "shop_id")
     private Long shopId;
     @Column(name = "activated_flag")
-    private Boolean activatedFlag;
+    private boolean activatedFlag = true;
 }

@@ -27,7 +27,7 @@ public class ShopService implements IShopService {
         Page<Shop> shopPage = shopRepository.findAllBySearch(search, PageRequest.of(page, limit).withSort(sort1));
         List<ShopDTO> shopDTOList = new ArrayList<>();
         for (Shop shop : shopPage) {
-            if (shop.isDeleteFlag()) {
+            if (!shop.isDeleteFlag()) {
                 ShopDTO shopDTO = ShopMapper.INSTANCE.shopToShopDTO(shop);
                 shopDTOList.add(shopDTO);
             }

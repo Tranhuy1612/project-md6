@@ -1,5 +1,6 @@
 package com.ra.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -22,9 +23,11 @@ import java.util.Date;
 public class GeneralClass {
     @CreatedDate
     @Column(name = "create_date")
+    @JsonFormat(pattern = "yyyyy-mm-dd hh:mm:ss")
     private Date createDate;
     @LastModifiedDate
     @Column(name = "update_date")
+    @JsonFormat(pattern = "yyyyy-mm-dd hh:mm:ss")
     private Date updateDate;
     @Column(name = "del_flag")
     private boolean deleteFlag = false;

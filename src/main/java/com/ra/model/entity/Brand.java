@@ -25,5 +25,5 @@ public class Brand extends GeneralClass{
     @Column(name = "mini_flyer")
     private String miniFlyer;
     @Column(name = "usage_flag")
-    private boolean usageFlag = false;
+    private boolean usageFlag = true;
 }

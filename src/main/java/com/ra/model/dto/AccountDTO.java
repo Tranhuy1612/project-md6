@@ -20,7 +20,7 @@ public class AccountDTO {
     private Agents agentId;
     private Long ownerId;
     private Long shopId;
-    private Boolean activatedFlag;
+    private boolean activatedFlag = true;
     private Date createDate;
     private Date updateDate;
     private boolean deleteFlag = false;
